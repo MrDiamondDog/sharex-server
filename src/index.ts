@@ -25,7 +25,7 @@ const upload = multer({
 
 const app = express();
 
-app.use((req, res, next) => {
+const auth = ((req, res, next) => {
     if (req.headers.authorization === process.env.API_KEY) {
         next();
     } else {
@@ -37,14 +37,14 @@ app.use(express.static("public"));
 
 
 
-app.post("/api/image", upload.single("image"), (req, res) => {
+app.post("/api/image", auth, upload.single("image"), (req, res) => {
     res.json({
         filename: req.file?.filename,
         link: "https://mrdiamond.is-a.dev/uploads/" + req.file?.filename
     })
 });
 
-app.delete("/api/image/:filename", (req, res) => {
+app.delete("/api/image/:filename", auth, (req, res) => {
     const filename = req.params.filename;
     if (!filename) {
         res.status(400).json({ error: "Filename is required" });
